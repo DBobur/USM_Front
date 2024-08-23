@@ -4,10 +4,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 import uz.pro.usm_front.domain.dto.request.user.LoginRequest;
 import uz.pro.usm_front.domain.dto.request.user.RegisterRequest;
 import uz.pro.usm_front.domain.dto.response.user.RoleResponse;
@@ -18,6 +15,7 @@ import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
+@RequestMapping("/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -29,10 +27,11 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String token(@RequestBody LoginRequest request, HttpSession session) {
+    public String token(@ModelAttribute LoginRequest request, HttpSession session) {
         String jwtToken = authService.login(request);
+        System.out.println(jwtToken);
         session.setAttribute("jwtToken", jwtToken); // Tokenni sessiyada saqlash
-        return "redirect:/home"; // Bosh sahifaga o'tish
+        return "redirect:/auth/home"; // Bosh sahifaga o'tish
     }
 
     @GetMapping("/register")
@@ -57,5 +56,10 @@ public class AuthController {
         UserResponse userResponse = authService.register(registerRequest);
         model.addAttribute("user", userResponse);
         return "redirect:/login";  // Muvaffaqiyatli ro'yxatdan o'tgandan keyin login sahifasiga yo'naltirish
+    }
+
+    @GetMapping("/home")
+    public String homePage(){
+        return "home";
     }
 }
